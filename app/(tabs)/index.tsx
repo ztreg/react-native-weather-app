@@ -1,31 +1,38 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { Image, StyleSheet } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function HomeScreen() {
-  let weather: any = null
-  const res = fetch('http://api.weatherapi.com/v1/current.json?key=c08645764b994410956135425243007&q=Stockholm&aqi=no')
-  .then((response: any) => response.json())
-  .then((json: any) => {
-    weather = json
-    console.log(weather);
-    
-    return json
-  })
-  .catch(error => {
-    console.error(error);
-  });
+  const [data, setData] = useState<any>(null)
+
+  useEffect(() => {
+    fetch('http://api.weatherapi.com/v1/current.json?key=c08645764b994410956135425243007&q=Stockholm&aqi=no')
+    .then((response: any) => response.json())
+    .then((json: any) => {
+      setData(json)
+      console.log(data);
+      
+      return json
+    })
+    .catch(error => {
+      alert(error)
+      console.error(error);
+    });
+  
+  }, [])
+  
+
+  // let weather: any = null
+
   const weatherType = 'sunny'
   const image = weatherType === 'sunny' ? 'sunny.jpg' : 'rain.jpg'
   
-  const [setWeather, useWeather] = useState()
   
   return (
-     <ParallaxScrollView
+   data && <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
       headerImage={
         <Image
@@ -35,7 +42,7 @@ export default function HomeScreen() {
       }>
       <ThemedView style={styles.stepContainer}>
         <ThemedText>
-        {weather?.location?.name ?? ''}
+        {data?.location?.name ?? ''}
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
