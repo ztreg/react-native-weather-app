@@ -7,32 +7,39 @@ import { useEffect, useState } from 'react';
 
 export default function HomeScreen() {
   const [data, setData] = useState<any>(null)
+  const [restOfDay, setRestOfDay] = useState<any[] | null>(null)
+
 
   useEffect(() => {
-    fetch('http://api.weatherapi.com/v1/current.json?key=c08645764b994410956135425243007&q=Stockholm&aqi=no')
-    .then((response: any) => response.json())
-    .then((json: any) => {
-      setData(json)
-      console.log(data);
+    const fetchWeather = async () => {
+      const res = await fetch('https://api.weatherapi.com/v1/forecast.json?q=Stockholm&days=1&alerts=no&aqi=no&key=c08645764b994410956135425243007')
+      const json = await res.json()
+      // console.log(json);
       
-      return json
-    })
-    .catch(error => {
-      alert(error)
-      console.error(error);
-    });
-  
-  }, [])
-  
+      const allTimes = json?.forecast?.forecastday?.[0].hour
+      const currentTime = json.current?.last_updated_epoch
+      const timesOfInterest = allTimes.filter((time: any) => time.time_epoch > currentTime)
+      console.log(timesOfInterest);
+      
+      setRestOfDay(timesOfInterest)
+      
+      setData(json)
+      return res
+    }
 
-  // let weather: any = null
+    fetchWeather()
+    .catch(console.error);
+  }, [])
+
+  const getTime = (date: string) => {
+    return date.split(' ')?.[1] || date
+  }
 
   const weatherType = 'sunny'
   const image = weatherType === 'sunny' ? 'sunny.jpg' : 'rain.jpg'
   
-  
   return (
-   data && <ParallaxScrollView
+   data && restOfDay && restOfDay?.length > 0 && <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
       headerImage={
         <Image
@@ -42,41 +49,30 @@ export default function HomeScreen() {
       }>
       <ThemedView style={styles.stepContainer}>
         <ThemedText>
-        {data?.location?.name ?? ''}
+        {data?.location?.name ?? ''} 
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText>
-        16:00
+        { getTime(data?.current?.last_updated) } | {data?.current?.temp_c } ° | 
+        <Image
+          source={data?.current?.condition?.icon}
+          style={styles.weatherIcon}
+        />
+        {/* <img style=[styles.image] src={data?.current?.condition?.icon} /> */}
         </ThemedText>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText>
-        16:00
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText>
-        16:00 
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText>
-        16:00
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText>
-        16:00 
-        </ThemedText>
-      </ThemedView>
+      {restOfDay.map((day) => (
+        <ThemedView style={styles.stepContainer} key={day.time}>
+          <ThemedText>
+          { getTime(day?.time) } | {day?.temp_c } ° | <img src={data?.current?.condition?.icon} />
+          </ThemedText>
+        </ThemedView>
+      ))}
     </ParallaxScrollView>
   );
 }
 
-const getMoviesFromApi = () => {
-
-};
 
 const styles = StyleSheet.create({
   stepContainer: {
@@ -92,5 +88,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: 'absolute',
+  },
+  weatherIcon: {
+    width: 24,
+    height: 24
   }
 });
