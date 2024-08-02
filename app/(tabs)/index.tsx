@@ -1,5 +1,5 @@
 import { Image, StyleSheet } from 'react-native';
-
+import { REACT_APP_API_KEY } from "@env"
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -13,7 +13,7 @@ export default function HomeScreen() {
   useEffect(() => {
     const fetchWeather = async () => {
       try {
-        const res = await fetch('https://api.weatherapi.com/v1/forecast.json?q=Stockholm&days=1&alerts=no&aqi=no&key=c08645764b994410956135425243007')
+        const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?q=Stockholm&days=1&alerts=no&aqi=no&key=${process.env.REACT_APP_API_KEY}`)
         const json = await res.json()
         // console.log(json);
         
