@@ -12,19 +12,24 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const fetchWeather = async () => {
-      const res = await fetch('https://api.weatherapi.com/v1/forecast.json?q=Stockholm&days=1&alerts=no&aqi=no&key=c08645764b994410956135425243007')
-      const json = await res.json()
-      // console.log(json);
-      
-      const allTimes = json?.forecast?.forecastday?.[0].hour
-      const currentTime = json.current?.last_updated_epoch
-      const timesOfInterest = allTimes.filter((time: any) => time.time_epoch > currentTime)
-      console.log(timesOfInterest);
-      
-      setRestOfDay(timesOfInterest)
-      
-      setData(json)
-      return res
+      try {
+        const res = await fetch('https://api.weatherapi.com/v1/forecast.json?q=Stockholm&days=1&alerts=no&aqi=no&key=c08645764b994410956135425243007')
+        const json = await res.json()
+        // console.log(json);
+        
+        const allTimes = json?.forecast?.forecastday?.[0].hour
+        const currentTime = json.current?.last_updated_epoch
+        const timesOfInterest = allTimes.filter((time: any) => time.time_epoch > currentTime)
+        console.log(timesOfInterest);
+        
+        setRestOfDay(timesOfInterest)
+        
+        setData(json)
+        return res
+      } catch (error) {
+        return error
+      }
+
     }
 
     fetchWeather()
@@ -52,35 +57,40 @@ export default function HomeScreen() {
         {data?.location?.name ?? ''} 
         </ThemedText>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText>
-        { getTime(data?.current?.last_updated) } | {data?.current?.temp_c } ° | 
+      <ThemedView >
+        <ThemedText style={styles.stepContainer}>
+        { getTime(data?.current?.last_updated) }
+        <ThemedText> {data?.current?.temp_c } °</ThemedText>
         <Image
-          source={data?.current?.condition?.icon}
+          source={{uri: data?.current?.condition?.icon}}
           style={styles.weatherIcon}
         />
-        {/* <img style=[styles.image] src={data?.current?.condition?.icon} /> */}
         </ThemedText>
       </ThemedView>
       {restOfDay.map((day) => (
-        <ThemedView style={styles.stepContainer} key={day.time}>
-          <ThemedText>
-          { getTime(day?.time) } | {day?.temp_c } ° | <img src={data?.current?.condition?.icon} />
-          </ThemedText>
-        </ThemedView>
+        <ThemedView key={day.time}>
+        <ThemedText style={styles.stepContainer}>
+        { getTime(day?.time) }
+        <ThemedText> {day?.temp_c } °</ThemedText>
+        <Image
+          source={{uri: day?.condition?.icon}}
+          style={styles.weatherIcon}
+        />
+        </ThemedText>
+      </ThemedView>
       ))}
     </ParallaxScrollView>
   );
 }
-
 
 const styles = StyleSheet.create({
   stepContainer: {
     borderBottomWidth: 0.2,
     borderBottomColor: 'red',
     gap: 8,
-    paddingBottom: 16,
-    marginBottom: 8,
+    paddingBottom: 8,
+    display: 'flex',
+    justifyContent: 'space-between',
   },
   reactLogo: {
     height: '100%',
@@ -90,7 +100,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   weatherIcon: {
-    width: 24,
-    height: 24
+    width: 32,
+    height: 32
   }
 });
