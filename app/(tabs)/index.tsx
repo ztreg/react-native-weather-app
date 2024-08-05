@@ -1,5 +1,5 @@
 import { Image, StyleSheet } from 'react-native';
-
+import { REACT_APP_API_KEY } from "@env"
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -7,29 +7,44 @@ import { useEffect, useState } from 'react';
 
 export default function HomeScreen() {
   const [data, setData] = useState<any>(null)
+  const [restOfDay, setRestOfDay] = useState<any[] | null>(null)
+
 
   useEffect(() => {
-    fetch('http://api.weatherapi.com/v1/current.json?key=c08645764b994410956135425243007&q=Stockholm&aqi=no')
-    .then((response: any) => response.json())
-    .then((json: any) => {
-      setData(json)
-      console.log(data);
-      
-      return json
-    })
-    .catch(error => {
-      alert(error)
-      console.error(error);
-    });
-  
+    const fetchWeather = async () => {
+      try {
+        const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?q=Stockholm&days=1&alerts=no&aqi=no&key=${process.env.REACT_APP_API_KEY}`)
+        const json = await res.json()
+        // console.log(json);
+        
+        const allTimes = json?.forecast?.forecastday?.[0].hour
+        const currentTime = json.current?.last_updated_epoch
+        const timesOfInterest = allTimes.filter((time: any) => time.time_epoch > currentTime)
+        console.log(timesOfInterest);
+        
+        setRestOfDay(timesOfInterest)
+        
+        setData(json)
+        return res
+      } catch (error) {
+        return error
+      }
+
+    }
+
+    fetchWeather()
+    .catch(console.error);
   }, [])
-  
+
+  const getTime = (date: string) => {
+    return date.split(' ')?.[1] || date
+  }
+
   const weatherType = 'sunny'
   const image = weatherType === 'sunny' ? 'sunny.jpg' : 'rain.jpg'
   
-  
   return (
-   data && <ParallaxScrollView
+   data && restOfDay && restOfDay?.length > 0 && <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
       headerImage={
         <Image
@@ -39,49 +54,43 @@ export default function HomeScreen() {
       }>
       <ThemedView style={styles.stepContainer}>
         <ThemedText>
-        {data?.location?.name ?? ''}
+        {data?.location?.name ?? ''} 
         </ThemedText>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText>
-        16:00
+      <ThemedView >
+        <ThemedText style={styles.stepContainer}>
+        { getTime(data?.current?.last_updated) }
+        <ThemedText> {data?.current?.temp_c } °</ThemedText>
+        <Image
+          source={{uri: data?.current?.condition?.icon}}
+          style={styles.weatherIcon}
+        />
         </ThemedText>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText>
-        16:00
+      {restOfDay.map((day) => (
+        <ThemedView key={day.time}>
+        <ThemedText style={styles.stepContainer}>
+        { getTime(day?.time) }
+        <ThemedText> {day?.temp_c } °</ThemedText>
+        <Image
+          source={{uri: day?.condition?.icon}}
+          style={styles.weatherIcon}
+        />
         </ThemedText>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText>
-        16:00 
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText>
-        16:00
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText>
-        16:00 
-        </ThemedText>
-      </ThemedView>
+      ))}
     </ParallaxScrollView>
   );
 }
-
-const getMoviesFromApi = () => {
-
-};
 
 const styles = StyleSheet.create({
   stepContainer: {
     borderBottomWidth: 0.2,
     borderBottomColor: 'red',
     gap: 8,
-    paddingBottom: 16,
-    marginBottom: 8,
+    paddingBottom: 8,
+    display: 'flex',
+    justifyContent: 'space-between',
   },
   reactLogo: {
     height: '100%',
@@ -89,5 +98,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: 'absolute',
+  },
+  weatherIcon: {
+    width: 32,
+    height: 32
   }
 });
