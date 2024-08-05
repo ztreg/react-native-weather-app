@@ -24,9 +24,6 @@ export default function HomeScreen() {
   
   }, [])
   
-
-  // let weather: any = null
-
   const weatherType = 'sunny'
   const image = weatherType === 'sunny' ? 'sunny.jpg' : 'rain.jpg'
   
