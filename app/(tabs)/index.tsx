@@ -4,36 +4,56 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useEffect, useState } from 'react';
+import Dropdown from '@/components/Dropdown';
+import cities from 'cities.json';
 
 export default function HomeScreen() {
   const [data, setData] = useState<any>(null)
   const [restOfDay, setRestOfDay] = useState<any[] | null>(null)
+  const [defaultLocation, setDefaultLocation] = useState<any | null>(null)
+  
+  const [selectedOption, setSelectedOption] = useState("");
+  const typedOptions = cities as any[]
+  const options = typedOptions.sort((a, b) => a.name.localeCompare(b.name)).map((city: any) => city.name)
+  const handleOptionSelected = (option: any) => {
+    setSelectedOption(option);
+    fetchWeather(option)
+  };
 
+  const fetchWeather = async (searchValue = 'Stockholm') => {
+    try {
+      const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?q=${searchValue}&days=1&alerts=no&aqi=no&key=${REACT_APP_API_KEY}`)
+      const json = await res.json()
+      
+      const allTimes = json?.forecast?.forecastday?.[0].hour
+      const currentTime = json.current?.last_updated_epoch
+      const timesOfInterest = allTimes.filter((time: any) => time.time_epoch > currentTime)
+      setRestOfDay(timesOfInterest)
+      setData(json)
+      return res
+    } catch (error) {
+      return error
+    }
+  }
 
   useEffect(() => {
-    const fetchWeather = async () => {
-      try {
-        const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?q=Stockholm&days=1&alerts=no&aqi=no&key=${process.env.REACT_APP_API_KEY}`)
-        const json = await res.json()
-        // console.log(json);
-        
-        const allTimes = json?.forecast?.forecastday?.[0].hour
-        const currentTime = json.current?.last_updated_epoch
-        const timesOfInterest = allTimes.filter((time: any) => time.time_epoch > currentTime)
-        console.log(timesOfInterest);
-        
-        setRestOfDay(timesOfInterest)
-        
-        setData(json)
-        return res
-      } catch (error) {
-        return error
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(success, error);
+      } else {
+        console.log("Geolocation not supported");
       }
-
-    }
-
-    fetchWeather()
-    .catch(console.error);
+      
+      function success(position: any) {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        const text = `${latitude},${longitude}` 
+        fetchWeather(text)
+        .catch(console.error);
+      }
+      
+      function error() {
+        console.log("Unable to retrieve your location");
+      }
   }, [])
 
   const getTime = (date: string) => {
@@ -52,19 +72,20 @@ export default function HomeScreen() {
           style={styles.reactLogo}
         />
       }>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText>
-        {data?.location?.name ?? ''} 
-        </ThemedText>
-      </ThemedView>
-      <ThemedView >
-        <ThemedText style={styles.stepContainer}>
-        { getTime(data?.current?.last_updated) }
-        <ThemedText> {data?.current?.temp_c } °</ThemedText>
-        <Image
-          source={{uri: data?.current?.condition?.icon}}
-          style={styles.weatherIcon}
-        />
+       <Dropdown
+        options={options}
+        onOptionSelected={handleOptionSelected}
+        defaultLocation={defaultLocation}
+        placeholder={"Search.."}
+      />
+      <ThemedView>
+        <ThemedText style={styles.stepContainer}> 
+          { getTime(data?.current?.last_updated) }
+          <ThemedText> {data?.current?.temp_c } °</ThemedText>
+          <Image
+            source={{uri: data?.current?.condition?.icon}}
+            style={styles.weatherIcon}
+          />
         </ThemedText>
       </ThemedView>
       {restOfDay.map((day) => (
