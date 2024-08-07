@@ -108,7 +108,6 @@ const styles = StyleSheet.create({
     fontSize: 28,
     marginRight: 8,
   },
-  ////////////// dropdown1
   dropdown1ButtonStyle: {
     width: '80%',
     height: 50,
@@ -165,7 +164,6 @@ const styles = StyleSheet.create({
     marginRight: 8,
     color: '#FFFFFF',
   },
-  ////////////// dropdown2
   dropdown2ButtonStyle: {
     width: '80%',
     height: 50,
