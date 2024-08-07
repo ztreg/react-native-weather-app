@@ -6,12 +6,14 @@ import { ThemedView } from '@/components/ThemedView';
 import { useEffect, useState } from 'react';
 import Dropdown from '@/components/Dropdown';
 import cities from 'cities.json';
+import { useDay } from '@/contexts/day-context';
 
 export default function HomeScreen() {
   const [data, setData] = useState<any>(null)
   const [restOfDay, setRestOfDay] = useState<any[] | null>(null)
   const [defaultLocation, setDefaultLocation] = useState<any | null>(null)
-  
+  const { day, setDay } = useDay(); 
+
   const [selectedOption, setSelectedOption] = useState("");
   const typedOptions = cities as any[]
   const options = typedOptions.sort((a, b) => a.name.localeCompare(b.name)).map((city: any) => city.name)
@@ -20,11 +22,11 @@ export default function HomeScreen() {
     fetchWeather(option)
   };
 
-  const fetchWeather = async (searchValue = 'Stockholm') => {
+  const fetchWeather = async (searchValue?: string) => {
     try {
-      const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?q=${searchValue}&days=1&alerts=no&aqi=no&key=${REACT_APP_API_KEY}`)
+      const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?q=${searchValue}&days=7&alerts=no&aqi=no&key=${REACT_APP_API_KEY}`)
       const json = await res.json()
-      
+
       const allTimes = json?.forecast?.forecastday?.[0].hour
       const currentTime = json.current?.last_updated_epoch
       const timesOfInterest = allTimes.filter((time: any) => time.time_epoch > currentTime)
@@ -35,6 +37,55 @@ export default function HomeScreen() {
       return error
     }
   }
+
+  if(day?.day ) {
+    if (!data) {
+      fetchWeather(selectedOption)
+    } else {
+
+      console.log(data)
+      const selectedDay = data?.forecast?.forecastday?.find((dayDate: any) => dayDate.date === day?.day)
+      console.log(selectedDay);
+      const allTimes = selectedDay.hour
+      const currentTime = data.current?.last_updated_epoch
+      const timesOfInterest = allTimes.filter((time: any) => time.time_epoch > currentTime)
+      setRestOfDay(timesOfInterest)
+    }
+    // console.log('render new')
+  }
+  
+
+  function renderData() {
+    console.log('rerender')
+    // if (data && restOfDay && restOfDay?.length > 0 ) {
+    //   return <>
+    //   <ThemedView>
+    //   <ThemedText style={styles.stepContainer}> 
+    //     { getTime(data?.current?.last_updated) }
+    //     <ThemedText> {data?.current?.temp_c } °</ThemedText>
+    //     <Image
+    //       source={{uri: data?.current?.condition?.icon}}
+    //       style={styles.weatherIcon}
+    //     />
+    //   </ThemedText>
+    // </ThemedView>
+    //   {restOfDay.map((day) => (
+    //     <ThemedView key={day.time}>
+    //     <ThemedText style={styles.stepContainer}>
+    //     { getTime(day?.time) }
+    //     <ThemedText> {day?.temp_c } °</ThemedText>
+    //     <Image
+    //       source={{uri: day?.condition?.icon}}
+    //       style={styles.weatherIcon}
+    //     />
+    //     </ThemedText>
+    //   </ThemedView>
+    //   ))}
+    // </>
+    // }
+    return <></>;
+  }
+
 
   useEffect(() => {
       if (navigator.geolocation) {
@@ -54,6 +105,7 @@ export default function HomeScreen() {
       function error() {
         console.log("Unable to retrieve your location");
       }
+
   }, [])
 
   const getTime = (date: string) => {
@@ -64,7 +116,7 @@ export default function HomeScreen() {
   const image = weatherType === 'sunny' ? 'sunny.jpg' : 'rain.jpg'
   
   return (
-   data && restOfDay && restOfDay?.length > 0 && <ParallaxScrollView
+   <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
       headerImage={
         <Image
@@ -78,28 +130,8 @@ export default function HomeScreen() {
         defaultLocation={defaultLocation}
         placeholder={"Search.."}
       />
-      <ThemedView>
-        <ThemedText style={styles.stepContainer}> 
-          { getTime(data?.current?.last_updated) }
-          <ThemedText> {data?.current?.temp_c } °</ThemedText>
-          <Image
-            source={{uri: data?.current?.condition?.icon}}
-            style={styles.weatherIcon}
-          />
-        </ThemedText>
-      </ThemedView>
-      {restOfDay.map((day) => (
-        <ThemedView key={day.time}>
-        <ThemedText style={styles.stepContainer}>
-        { getTime(day?.time) }
-        <ThemedText> {day?.temp_c } °</ThemedText>
-        <Image
-          source={{uri: day?.condition?.icon}}
-          style={styles.weatherIcon}
-        />
-        </ThemedText>
-      </ThemedView>
-      ))}
+      {renderData()}
+
     </ParallaxScrollView>
   );
 }

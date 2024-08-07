@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image } from 'react-native';
+import { StyleSheet, Image, Button, TouchableHighlight, Pressable } from 'react-native';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -7,11 +7,14 @@ import { REACT_APP_API_KEY } from '@env';
 import { useState, useEffect } from 'react';
 import Dropdown from '../../components/Dropdown';
 import cities from 'cities.json';
+import { useDay } from '@/contexts/day-context';
+import { router } from 'expo-router';
+// import { TouchableHighlight } from 'react-native-gesture-handler';
 
 export default function TabTwoScreen() {
   const [data, setData] = useState<any>(null)
   const [defaultLocation, setDefaultLocation] = useState<any | null>(null)
-
+  const { day, setDay } = useDay();
   const [selectedOption, setSelectedOption] = useState("");
 
   const typedOptions = cities as any[]
@@ -32,6 +35,11 @@ export default function TabTwoScreen() {
     } catch (error) {
       return error
     }
+  }
+
+  function changeDate(date: string) {
+    setDay({day: date})
+    router.navigate('/')
   }
 
   useEffect(() => {
@@ -77,6 +85,7 @@ export default function TabTwoScreen() {
       />
        {data.map((day: any) => (
          <ThemedView key={day.date}>
+          <Pressable onPress={() => changeDate(day.date)}>
           <ThemedText style={styles.stepContainer}>{ getTime(day?.date) }
           <ThemedText> {day?.day?.avgtemp_c } °</ThemedText>
           <Image
@@ -84,6 +93,7 @@ export default function TabTwoScreen() {
             style={styles.weatherIcon}
           />
           </ThemedText>
+          </Pressable>
         </ThemedView>
        ))}
      </ParallaxScrollView>
