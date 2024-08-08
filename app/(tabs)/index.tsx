@@ -10,9 +10,10 @@ import { useDay } from '@/contexts/day-context';
 
 export default function HomeScreen() {
   const [data, setData] = useState<any>(null)
+  const [currentDay, setCurrentDay] = useState<any>(null)
   const [restOfDay, setRestOfDay] = useState<any[] | null>(null)
   const [defaultLocation, setDefaultLocation] = useState<any | null>(null)
-  const { day, setDay } = useDay(); 
+  const { day, setDay } = useDay();
 
   const [selectedOption, setSelectedOption] = useState("");
   const typedOptions = cities as any[]
@@ -38,56 +39,39 @@ export default function HomeScreen() {
     }
   }
 
-  if(day?.day ) {
-    if (!data) {
-      fetchWeather(selectedOption)
-    } else {
-
-      console.log(data)
-      const selectedDay = data?.forecast?.forecastday?.find((dayDate: any) => dayDate.date === day?.day)
-      console.log(selectedDay);
-      const allTimes = selectedDay.hour
-      const currentTime = data.current?.last_updated_epoch
-      const timesOfInterest = allTimes.filter((time: any) => time.time_epoch > currentTime)
-      setRestOfDay(timesOfInterest)
-    }
-    // console.log('render new')
-  }
-  
-
   function renderData() {
-    console.log('rerender')
-    // if (data && restOfDay && restOfDay?.length > 0 ) {
-    //   return <>
-    //   <ThemedView>
-    //   <ThemedText style={styles.stepContainer}> 
-    //     { getTime(data?.current?.last_updated) }
-    //     <ThemedText> {data?.current?.temp_c } °</ThemedText>
-    //     <Image
-    //       source={{uri: data?.current?.condition?.icon}}
-    //       style={styles.weatherIcon}
-    //     />
-    //   </ThemedText>
-    // </ThemedView>
-    //   {restOfDay.map((day) => (
-    //     <ThemedView key={day.time}>
-    //     <ThemedText style={styles.stepContainer}>
-    //     { getTime(day?.time) }
-    //     <ThemedText> {day?.temp_c } °</ThemedText>
-    //     <Image
-    //       source={{uri: day?.condition?.icon}}
-    //       style={styles.weatherIcon}
-    //     />
-    //     </ThemedText>
-    //   </ThemedView>
-    //   ))}
-    // </>
-    // }
-    return <></>;
+    if (data && restOfDay && restOfDay?.length > 0 ) {
+      return <>
+      <ThemedView>
+      <ThemedText style={styles.stepContainer}> 
+        { getTime(data?.current?.last_updated) }
+        <ThemedText> {data?.current?.temp_c } °</ThemedText>
+        <Image
+          source={{uri: data?.current?.condition?.icon}}
+          style={styles.weatherIcon}
+        />
+      </ThemedText>
+    </ThemedView>
+      {restOfDay.map((day) => (
+        <ThemedView key={day.time}>
+        <ThemedText style={styles.stepContainer}>
+        { getTime(day?.time) }
+        <ThemedText> {day?.temp_c } °</ThemedText>
+        <Image
+          source={{uri: day?.condition?.icon}}
+          style={styles.weatherIcon}
+        />
+        </ThemedText>
+      </ThemedView>
+      ))}
+    </>
+    }
+    return '';
   }
 
 
   useEffect(() => {
+    if (!data) {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(success, error);
       } else {
@@ -97,7 +81,8 @@ export default function HomeScreen() {
       function success(position: any) {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
-        const text = `${latitude},${longitude}` 
+        const text = `${latitude},${longitude}`
+        
         fetchWeather(text)
         .catch(console.error);
       }
@@ -105,8 +90,24 @@ export default function HomeScreen() {
       function error() {
         console.log("Unable to retrieve your location");
       }
+    }
 
-  }, [])
+      if (day?.day) {
+        setCurrentDay(day.day)
+        if (day.day !== currentDay) {
+          if (!data) {
+            fetchWeather(selectedOption)
+          } else {
+            setRestOfDay([])
+            const selectedDay = data?.forecast?.forecastday?.find((dayDate: any) => dayDate.date === day?.day)
+            const allTimes = selectedDay.hour
+            const currentTime = data.current?.last_updated.split(' ')?.[1]
+            const timesOfInterest = allTimes.filter((time: any) => time.time.split(' ')?.[1] > currentTime)
+            setRestOfDay(timesOfInterest)
+          }
+        }
+      }
+  }, [day])
 
   const getTime = (date: string) => {
     return date.split(' ')?.[1] || date
