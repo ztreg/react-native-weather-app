@@ -91,22 +91,21 @@ export default function HomeScreen() {
         console.log("Unable to retrieve your location");
       }
     }
-
-      if (day?.day) {
-        setCurrentDay(day.day)
-        if (day.day !== currentDay) {
-          if (!data) {
-            fetchWeather(selectedOption)
-          } else {
-            setRestOfDay([])
-            const selectedDay = data?.forecast?.forecastday?.find((dayDate: any) => dayDate.date === day?.day)
-            const allTimes = selectedDay.hour
-            const currentTime = data.current?.last_updated.split(' ')?.[1]
-            const timesOfInterest = allTimes.filter((time: any) => time.time.split(' ')?.[1] > currentTime)
-            setRestOfDay(timesOfInterest)
-          }
+    if (day?.day) {
+      setCurrentDay(day.day)
+      if (day.day !== currentDay) {
+        if (!data) {
+          fetchWeather(selectedOption)
+        } else {
+          setRestOfDay([])
+          const selectedDay = data?.forecast?.forecastday?.find((dayDate: any) => dayDate.date === day?.day)
+          const allTimes = selectedDay.hour
+          const currentTime = data.current?.last_updated.split(' ')?.[1]
+          const timesOfInterest = allTimes.filter((time: any) => time.time.split(' ')?.[1] > currentTime)
+          setRestOfDay(timesOfInterest)
         }
       }
+    }
   }, [day])
 
   const getTime = (date: string) => {

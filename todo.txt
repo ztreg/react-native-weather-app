@@ -1,0 +1,10 @@
+Must:
+Fix "current time" when choosing a date from week.
+Change dynamic header image depending on current weather.
+Display current day.
+Always display header.
+Move out api call further out
+
+Extra:
+Add cool animations depending on weather?
+Change search to target less cities
