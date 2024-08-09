@@ -35,6 +35,7 @@ export default function HomeScreen() {
       setData(json)
       return res
     } catch (error) {
+      alert('error fetching')
       return error
     }
   }
@@ -66,7 +67,7 @@ export default function HomeScreen() {
       ))}
     </>
     }
-    return '';
+    return 'loading';
   }
 
 
@@ -75,7 +76,7 @@ export default function HomeScreen() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(success, error);
       } else {
-        console.log("Geolocation not supported");
+        alert("Geolocation not supported");
       }
       
       function success(position: any) {
@@ -84,7 +85,7 @@ export default function HomeScreen() {
         const text = `${latitude},${longitude}`
         
         fetchWeather(text)
-        .catch(console.error);
+        .catch((e) => alert('Failed to fetch weather'));
       }
       
       function error() {
@@ -130,7 +131,8 @@ export default function HomeScreen() {
         defaultLocation={defaultLocation}
         placeholder={"Search.."}
       />
-      {renderData()}
+      {renderData() || <h1>Loading...</h1> }
+
 
     </ParallaxScrollView>
   );
