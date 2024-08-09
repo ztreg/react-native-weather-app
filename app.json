@@ -2,7 +2,6 @@
   "expo": {
     "name": "weater-app",
     "slug": "weater-app",
-    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -12,6 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "version": "1.0.1",
     "ios": {
       "supportsTablet": true
     },
@@ -20,7 +20,10 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.ztreg.weaterapp"
+      "package": "com.ztreg.weaterapp",
+      "versionCode": "2",
+      "version": "1.0.1"
+
     },
     "web": {
       "bundler": "metro",
