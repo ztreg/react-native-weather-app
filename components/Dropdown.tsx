@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { StyleSheet, View, Text } from 'react-native'
 import React, { useState } from 'react'
 import { FontAwesome } from '@expo/vector-icons';

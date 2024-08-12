@@ -1,5 +1,4 @@
 import { Image, StyleSheet } from 'react-native';
-// import { REACT_APP_API_KEY } from "@env"
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -7,6 +6,7 @@ import { useEffect, useState } from 'react';
 import Dropdown from '@/components/Dropdown';
 import cities from 'cities.json';
 import { useDay } from '@/contexts/day-context';
+import React from 'react';
 
 export default function HomeScreen() {
   const [data, setData] = useState<any>(null)
@@ -24,8 +24,6 @@ export default function HomeScreen() {
   };
 
   const fetchWeather = async (searchValue?: string) => {
-    const REACT_APP_API_KEY = process.env.EXPO_PUBLIC_API_KEY;
-    
     try {
       const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?q=${searchValue}&days=7&alerts=no&aqi=no&key=c08645764b994410956135425243007`)
       const json = await res.json()
@@ -108,7 +106,7 @@ export default function HomeScreen() {
         }
       }
     }
-  }, [day])
+  }, [currentDay, data, selectedOption, day])
 
   const getTime = (date: string) => {
     return date.split(' ')?.[1] || date

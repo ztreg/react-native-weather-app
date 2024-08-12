@@ -1,5 +1,5 @@
-import { DayProvider } from '@/contexts/day-context';
 import { ScrollViewStyleReset } from 'expo-router/html';
+import React from 'react';
 import { type PropsWithChildren } from 'react';
 
 /**
