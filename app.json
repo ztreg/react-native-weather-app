@@ -4,11 +4,11 @@
     "slug": "weater-app",
     "version": "1.0.4",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.jpg",
+    "icon": "./assets/images/squaresun.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/thunder.jpg",
+      "image": "./assets/images/squaresun.png",
       "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/thunder.jpg",
+        "foregroundImage": "./assets/images/squaresun.png",
         "backgroundColor": "#000000"
       },
       "package": "com.ztreg.weaterapp",
