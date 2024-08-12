@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image, Button, TouchableHighlight, Pressable } from 'react-native';
+import { StyleSheet, Image, Pressable } from 'react-native';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -9,7 +9,6 @@ import Dropdown from '../../components/Dropdown';
 import cities from 'cities.json';
 import { useDay } from '@/contexts/day-context';
 import { router } from 'expo-router';
-// import { TouchableHighlight } from 'react-native-gesture-handler';
 
 export default function TabTwoScreen() {
   const [data, setData] = useState<any>(null)
@@ -26,7 +25,6 @@ export default function TabTwoScreen() {
 
   const fetchWeather = async (searchValue = "Stockholm") => {
     const REACT_APP_API_KEY = process.env.EXPO_PUBLIC_API_KEY;
-    alert(REACT_APP_API_KEY);
     try {
       const res = await fetch(`http://api.weatherapi.com/v1/forecast.json?key=c08645764b994410956135425243007&q=${searchValue}&days=7&aqi=no&alerts=no`)
       const json = await res.json()

@@ -25,7 +25,6 @@ export default function HomeScreen() {
 
   const fetchWeather = async (searchValue?: string) => {
     const REACT_APP_API_KEY = process.env.EXPO_PUBLIC_API_KEY;
-    alert(REACT_APP_API_KEY);
     
     try {
       const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?q=${searchValue}&days=7&alerts=no&aqi=no&key=c08645764b994410956135425243007`)
@@ -38,7 +37,6 @@ export default function HomeScreen() {
       setData(json)
       return res
     } catch (error) {
-      alert('error fetching')
       return error
     }
   }
@@ -79,7 +77,7 @@ export default function HomeScreen() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(success, error);
       } else {
-        alert("Geolocation not supported");
+        // alert("Geolocation not supported");
       }
       
       function success(position: any) {
@@ -88,7 +86,7 @@ export default function HomeScreen() {
         const text = `${latitude},${longitude}`
         
         fetchWeather(text)
-        .catch((e) => alert('Failed to fetch weather'));
+        .catch((e) => console.error('Failed to fetch weather'));
       }
       
       function error() {

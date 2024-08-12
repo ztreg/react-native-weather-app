@@ -23,9 +23,7 @@ export default function Dropdown ({ options, onOptionSelected, defaultLocation }
       onSelect={(selectedItem, index) => onOptionPress(selectedItem)}
       renderButton={(selectedItem, isOpen) => {
         return (
-          <View style={styles.dropdownButtonStyle}>
-            <Text style={styles.dropdownButtonTxtStyle}>{selectedItem || ''}</Text>
-          </View>
+          <View style={styles.dropdownButtonStyle}><Text style={styles.dropdownButtonTxtStyle}>{selectedItem || ''}</Text></View>
         );
       }}
       renderItem={(item, index, isSelected) => {
@@ -34,9 +32,7 @@ export default function Dropdown ({ options, onOptionSelected, defaultLocation }
             style={{
               ...styles.dropdownItemStyle,
               ...(isSelected && {backgroundColor: '#D2D9DF'}),
-            }}>
-            <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
-          </View>
+            }}><Text style={styles.dropdownItemTxtStyle}>{item}</Text></View>
         );
       }}
       dropdownStyle={styles.dropdownMenuStyle}
