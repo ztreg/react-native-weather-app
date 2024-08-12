@@ -3,7 +3,7 @@ import { StyleSheet, Image, Button, TouchableHighlight, Pressable } from 'react-
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { REACT_APP_API_KEY } from '@env';
+// import { REACT_APP_API_KEY } from '@env';
 import { useState, useEffect } from 'react';
 import Dropdown from '../../components/Dropdown';
 import cities from 'cities.json';
@@ -25,8 +25,10 @@ export default function TabTwoScreen() {
   };
 
   const fetchWeather = async (searchValue = "Stockholm") => {
+    const REACT_APP_API_KEY = process.env.EXPO_PUBLIC_API_KEY;
+    alert(REACT_APP_API_KEY);
     try {
-      const res = await fetch(`http://api.weatherapi.com/v1/forecast.json?key=${REACT_APP_API_KEY}&q=${searchValue}&days=7&aqi=no&alerts=no`)
+      const res = await fetch(`http://api.weatherapi.com/v1/forecast.json?key=c08645764b994410956135425243007&q=${searchValue}&days=7&aqi=no&alerts=no`)
       const json = await res.json()
       const allDays = json?.forecast?.forecastday.splice(1)
       setData(allDays)
