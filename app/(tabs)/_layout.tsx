@@ -19,6 +19,15 @@ export default function TabLayout() {
         options={{
           title: 'Day',
           tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+          ),
+        }}
+      />
+      {/* <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Day',
+          tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'today' : 'today-outline'} color={color} />
           ),
         }}
@@ -31,7 +40,7 @@ export default function TabLayout() {
             <TabBarIcon name={focused ? 'list' : 'list-outline'} color={color} />
           ),
         }}
-      />
+      /> */}
     </Tabs>
   );
 }
