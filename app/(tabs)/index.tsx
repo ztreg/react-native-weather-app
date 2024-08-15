@@ -125,10 +125,10 @@ export default function HomeScreen() {
         defaultLocation={defaultLocation}
         placeholder={"Search.."}
       />
-      {renderData() }
+      {renderData() || <ThemedView><ThemedText>Hello</ThemedText></ThemedView>}
 
 
-    </ParallaxScrollView> || <ThemedView><ThemedText>Hello</ThemedText></ThemedView>
+    </ParallaxScrollView>
   );
 }
 
@@ -152,6 +152,6 @@ const styles = StyleSheet.create({
     marginBottom: -8
   },
   space: {
-    marginLeft: '18%',
+    marginLeft: 54
   }
 });

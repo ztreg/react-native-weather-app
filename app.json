@@ -2,7 +2,7 @@
   "expo": {
     "name": "weater-app",
     "slug": "weater-app",
-    "version": "1.0.13",
+    "version": "1.0.14",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -21,7 +21,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.ztreg.weaterapp",
-      "versionCode": 24
+      "versionCode": 25
     },
     "web": {
       "bundler": "metro",

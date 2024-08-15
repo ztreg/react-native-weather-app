@@ -67,27 +67,9 @@ export default function TabTwoScreen() {
     })();
   }, []);
 
-  const getTime = (date: string) => {
-    return date.split(' ')?.[1] || date
-  }
-
-  const weatherType = 'sunny'
-  const image = weatherType === 'sunny' ? 'sunny.jpg' : 'rain.jpg'
-  return (
-    defaultLocation && data && data?.length > 0 && <ParallaxScrollView
-       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-       headerImage={
-         <Image
-           source={require(`@/assets/images/${image}`)}
-           style={styles.reactLogo}
-         />
-       }>
-       <Dropdown
-        options={typedOptions}
-        onOptionSelected={handleOptionSelected}
-        defaultLocation={defaultLocation}
-        placeholder={"Search.."}
-      />
+  function renderData() {
+    if (data) {
+      return <>
        {data.map((day: any) => (
          <ThemedView key={day.date}>
           <Pressable onPress={() => changeDate(day.date)}>
@@ -102,7 +84,34 @@ export default function TabTwoScreen() {
           </Pressable>
         </ThemedView>
        ))}
-     </ParallaxScrollView> ||  <ThemedView><ThemedText>2ndpage</ThemedText></ThemedView>
+    </>
+    }
+    return null;
+  }
+
+  const getTime = (date: string) => {
+    return date.split(' ')?.[1] || date
+  }
+
+  const weatherType = 'sunny'
+  const image = weatherType === 'sunny' ? 'sunny.jpg' : 'rain.jpg'
+  return (
+    <ParallaxScrollView
+       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
+       headerImage={
+         <Image
+           source={require(`@/assets/images/${image}`)}
+           style={styles.reactLogo}
+         />
+       }>
+       <Dropdown
+        options={typedOptions}
+        onOptionSelected={handleOptionSelected}
+        defaultLocation={defaultLocation}
+        placeholder={"Search.."}
+      />
+      {renderData() || <ThemedView><ThemedText><h1>Loading...</h1></ThemedText></ThemedView>}
+     </ParallaxScrollView>
    );
 }
 
@@ -127,6 +136,6 @@ const styles = StyleSheet.create({
     marginBottom: -8
   },
   space: {
-    marginLeft: '18%',
+    marginLeft: 54
   }
 });
