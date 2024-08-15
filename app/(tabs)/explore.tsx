@@ -65,7 +65,7 @@ export default function TabTwoScreen() {
       fetchWeather(text)
       .catch(console.error);
     })();
-  }, [cities]);
+  }, []);
 
   const getTime = (date: string) => {
     return date.split(' ')?.[1] || date
@@ -74,7 +74,7 @@ export default function TabTwoScreen() {
   const weatherType = 'sunny'
   const image = weatherType === 'sunny' ? 'sunny.jpg' : 'rain.jpg'
   return (
-    typedOptions && defaultLocation && data && data?.length > 0 && <ParallaxScrollView
+    defaultLocation && data && data?.length > 0 && <ParallaxScrollView
        headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
        headerImage={
          <Image
@@ -91,13 +91,14 @@ export default function TabTwoScreen() {
        {data.map((day: any) => (
          <ThemedView key={day.date}>
           <Pressable onPress={() => changeDate(day.date)}>
-          <ThemedText style={styles.stepContainer}>{ getTime(day?.date) }
-          <ThemedText> {day?.day?.avgtemp_c } °</ThemedText>
-          <Image
-            source={{uri: day?.day?.condition?.icon}}
-            style={styles.weatherIcon}
-          />
-          </ThemedText>
+            <ThemedText style={styles.stepContainer}>
+              { getTime(day?.date) }
+              <ThemedText style={styles.space}> {day?.day?.avgtemp_c } °</ThemedText>
+              <Image
+                source={{uri: 'https://' + day?.day?.condition?.icon}}
+                style={[styles.weatherIcon, styles.space]}
+              />
+            </ThemedText>
           </Pressable>
         </ThemedView>
        ))}
@@ -111,10 +112,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.2,
     borderBottomColor: 'red',
     gap: 8,
-    paddingBottom: 8,
-    flex: 1,
-    justifyContent: 'space-between',
-    flexDirection: 'row'
+    paddingBottom: 8
   },
   reactLogo: {
     height: '100%',
@@ -125,6 +123,10 @@ const styles = StyleSheet.create({
   },
   weatherIcon: {
     width: 32,
-    height: 32
+    height: 32,
+    marginBottom: -8
+  },
+  space: {
+    marginLeft: '18%',
   }
 });

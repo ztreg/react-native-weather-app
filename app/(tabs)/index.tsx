@@ -45,25 +45,15 @@ export default function HomeScreen() {
   function renderData() {
     if (data && restOfDay && restOfDay?.length > 0 ) {
       return <>
-      <ThemedView>
-      <ThemedText style={styles.stepContainer}> 
-        { getTime(data?.current?.last_updated) }
-        <ThemedText> {data?.current?.temp_c } °</ThemedText>
-        <Image
-          source={{uri: data?.current?.condition?.icon}}
-          style={styles.weatherIcon}
-        />
-      </ThemedText>
-    </ThemedView>
       {restOfDay.map((day) => (
         <ThemedView key={day.time}>
         <ThemedText style={styles.stepContainer}>
         { getTime(day?.time) }
-        <ThemedText> {day?.temp_c } °</ThemedText>
+        <ThemedText style={styles.space}> {day?.temp_c } °</ThemedText>
         <Image
-          source={{uri: day?.condition?.icon}}
-          style={styles.weatherIcon}
-        />
+          source={{uri: 'https://' + day?.condition?.icon}}
+          style={[styles.weatherIcon, styles.space]}
+        /> 
         </ThemedText>
       </ThemedView>
       ))}
@@ -147,9 +137,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.2,
     borderBottomColor: 'red',
     gap: 8,
-    paddingBottom: 8,
-    display: 'flex',
-    justifyContent: 'space-between',
+    paddingBottom: 8
   },
   reactLogo: {
     height: '100%',
@@ -160,6 +148,10 @@ const styles = StyleSheet.create({
   },
   weatherIcon: {
     width: 32,
-    height: 32
+    height: 32,
+    marginBottom: -8
+  },
+  space: {
+    marginLeft: '18%',
   }
 });
