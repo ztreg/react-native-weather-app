@@ -3,8 +3,7 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useEffect, useState } from 'react';
-import * as cities from '../../data/geonames-all-cities-with-a-population-1000.json'
-import { useDay } from '@/@contexts/day-context';
+import { useCities, useDay } from '@/@contexts/day-context';
 import React from 'react';
 import Dropdown from '@/components/Dropdown';
 import * as Location from 'expo-location';
@@ -15,9 +14,10 @@ export default function HomeScreen() {
   const [restOfDay, setRestOfDay] = useState<any[] | null>(null)
   const [defaultLocation, setDefaultLocation] = useState<any | null>(null)
   const { day, setDay } = useDay();
+  const { cities, setCities } = useCities();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [typedOptions, setTypedOptions] = useState<any[] | null>(null);
-
+  
   const [selectedOption, setSelectedOption] = useState("");
   // const typedOptions = cities as any[]
   // const options = typedOptions.sort((a, b) => a.name.localeCompare(b.name)).map((city: any) => city.name)
@@ -47,29 +47,24 @@ export default function HomeScreen() {
       return <>
       {restOfDay.map((day) => (
         <ThemedView key={day.time}>
-        <ThemedText style={styles.stepContainer}>
-        { getTime(day?.time) }
-        <ThemedText style={styles.space}> {day?.temp_c } °</ThemedText>
-        <Image
-          source={{uri: 'https://' + day?.condition?.icon}}
-          style={[styles.weatherIcon, styles.space]}
-        /> 
-        </ThemedText>
-      </ThemedView>
+          <ThemedText style={styles.stepContainer}>
+          { getTime(day?.time) }
+          <ThemedText style={[styles.space, styles.defaultWidth]}> {day?.temp_c } °</ThemedText>
+          <Image
+            source={{uri: 'https://' + day?.condition?.icon}}
+            style={[styles.weatherIcon, styles.space]}
+          /> 
+          </ThemedText>
+        </ThemedView>
       ))}
     </>
     }
     return null;
   }
 
-
   useEffect(() => {
-    if (cities) {
-      setTypedOptions(cities)
-    }
     if (!data) {
       (async () => {
-        
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
           setErrorMsg('Permission to access location was denied');
@@ -125,7 +120,7 @@ export default function HomeScreen() {
         defaultLocation={defaultLocation}
         placeholder={"Search.."}
       />
-      {renderData() || <ThemedView><ThemedText>Hello</ThemedText></ThemedView>}
+      {renderData() || <ThemedView><ThemedText>Loading...</ThemedText></ThemedView>}
 
 
     </ParallaxScrollView>
@@ -153,5 +148,8 @@ const styles = StyleSheet.create({
   },
   space: {
     marginLeft: 54
+  },
+  defaultWidth: {
+    width: 100
   }
 });

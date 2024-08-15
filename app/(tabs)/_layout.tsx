@@ -1,12 +1,21 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import * as allCities from '../../data/geonames-all-cities-with-a-population-1000.json'
+import { useCities } from '@/@contexts/day-context';
+
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { setCities } = useCities();
+
+  useEffect(() => {
+    setCities([allCities])
+  }, [setCities])
+  
 
   return (
     <Tabs
