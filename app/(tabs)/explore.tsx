@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   stepContainer: {
     borderBottomWidth: 0.2,
     borderBottomColor: 'red',
-    gap: 16,
+    gap: 8,
     paddingBottom: 8,
     flex: 1,
     justifyContent: 'space-between',

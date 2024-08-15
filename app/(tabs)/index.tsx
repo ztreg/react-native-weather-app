@@ -111,7 +111,7 @@ export default function HomeScreen() {
         }
       }
     }
-  }, [currentDay, data, selectedOption, day, cities])
+  }, [currentDay, data, selectedOption, day])
 
   const getTime = (date: string) => {
     return date.split(' ')?.[1] || date
