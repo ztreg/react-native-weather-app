@@ -13,7 +13,9 @@ export default function TabLayout() {
   const { setCities } = useCities();
 
   useEffect(() => {
-    setCities([allCities])
+    // const all = allCities
+    // const options = all.sort((a, b) => a?.name?.localeCompare(b?.name))?.map((city: any) => city?.name)
+    setCities(allCities)
   }, [setCities])
   
 
