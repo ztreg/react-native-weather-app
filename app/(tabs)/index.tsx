@@ -2,9 +2,8 @@ import { Image, StyleSheet } from 'react-native';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCities, useDay } from '@/@contexts/day-context';
-import React from 'react';
 import Dropdown from '@/components/Dropdown';
 import * as Location from 'expo-location';
 

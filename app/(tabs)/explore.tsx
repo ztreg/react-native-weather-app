@@ -12,7 +12,7 @@ export default function TabTwoScreen() {
   const [data, setData] = useState<any>(null);
   const [defaultLocation, setDefaultLocation] = useState<any | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const { day, setDay } = useDay();
+  const { setDay } = useDay();
   const [selectedOption, setSelectedOption] = useState("");
   const { cities } = useCities();
 
@@ -66,7 +66,7 @@ export default function TabTwoScreen() {
         fetchWeather(text).catch(console.error);
       })();
     }
-  }, [data]);
+  }, [defaultLocation]);
 
   function renderData() {
     if (data) {
@@ -115,9 +115,7 @@ export default function TabTwoScreen() {
       />
       {renderData() || (
         <ThemedView>
-          <ThemedText>
-            <h1>Loading...</h1>
-          </ThemedText>
+          <ThemedText>Loading...</ThemedText>
         </ThemedView>
       ) }
     </ParallaxScrollView>
