@@ -18,6 +18,35 @@ export default function Dropdown ({ options, onOptionSelected, defaultLocation }
 
   return (
     <View style={styles.container}>
+    <SelectDropdown
+      disableAutoScroll
+      data={options}
+      defaultValue={'Stockholm'} // use default value by index or default value
+      onSelect={(selectedItem, index) => onOptionPress(selectedItem)}
+      renderButton={(selectedItem, isOpen) => {
+        return (
+          <View style={styles.dropdownButtonStyle}><Text style={styles.dropdownButtonTxtStyle}>{selectedItem || ''}</Text></View>
+        );
+      }}
+      renderItem={(item, index, isSelected) => {
+        return (
+          <View
+            style={{
+              ...styles.dropdownItemStyle,
+              ...(isSelected && {backgroundColor: '#D2D9DF'}),
+            }}><Text style={styles.dropdownItemTxtStyle}>{item}</Text></View>
+        );
+      }}
+      dropdownStyle={styles.dropdownMenuStyle}
+      search
+      searchInputStyle={styles.dropdownSearchInputStyle}
+      searchInputTxtColor={'#151E26'}
+      searchPlaceHolder={'Search here'}
+      searchPlaceHolderColor={'#72808D'}
+      renderSearchInputLeftIcon={() => {
+        return <FontAwesome name={'search'} color={'#72808D'} size={18} />;
+      }}
+    />
   </View>
 );
 };

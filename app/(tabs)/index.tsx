@@ -14,13 +14,10 @@ export default function HomeScreen() {
   const [restOfDay, setRestOfDay] = useState<any[] | null>(null)
   const [defaultLocation, setDefaultLocation] = useState<any | null>(null)
   const { day, setDay } = useDay();
-  const { cities, setCities } = useCities();
+  const { cities } = useCities();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [typedOptions, setTypedOptions] = useState<any[] | null>(null);
   
   const [selectedOption, setSelectedOption] = useState("");
-  // const typedOptions = cities as any[]
-  // const options = typedOptions.sort((a, b) => a.name.localeCompare(b.name)).map((city: any) => city.name)
   const handleOptionSelected = (option: any) => {
     setSelectedOption(option);
     fetchWeather(option)
@@ -43,7 +40,7 @@ export default function HomeScreen() {
   }
 
   function renderData() {
-    if (data && restOfDay && restOfDay?.length > 0 ) {
+    if (cities && cities?.length > 0 && data && restOfDay && restOfDay?.length > 0 ) {
       return <>
       {restOfDay.map((day) => (
         <ThemedView key={day.time}>
@@ -115,7 +112,7 @@ export default function HomeScreen() {
         />
       }>
        <Dropdown
-        options={typedOptions}
+        options={cities}
         onOptionSelected={handleOptionSelected}
         defaultLocation={defaultLocation}
         placeholder={"Search.."}
