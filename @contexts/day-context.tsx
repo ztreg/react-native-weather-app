@@ -23,6 +23,13 @@ type CitiesContextType = {
 
 const CitiesContext = createContext<CitiesContextType | undefined>(undefined);
 
+type ChoosenLocationContextType = {
+  choosenLocation: { [key: string]: any } | null;
+  setChoosenLocation: Dispatch<SetStateAction<{ [key: string]: any } | null>>;
+};
+
+const ChoosenLocationContext = createContext<ChoosenLocationContextType | undefined>(undefined);
+
 function useDay(): DayContextType {
   const context = useContext(DayContext);
   if (!context) {
@@ -39,6 +46,14 @@ function useCities(): CitiesContextType {
   return context;
 }
 
+function useChoosenLocation(): ChoosenLocationContextType {
+  const context = useContext(ChoosenLocationContext);
+  if (!context) {
+      throw new Error("useLocation must be used within an LocationsProvider");
+  }
+  return context;
+}
+
 const DayProvider = (props: { children: ReactNode }): ReactElement => {
   const [day, setDay] = useState<{ [key: string]: any } | null>(null);
 
@@ -50,4 +65,11 @@ const CitiesProvider = (props: { children: ReactNode }): ReactElement => {
 
   return <CitiesContext.Provider {...props} value={{ cities, setCities }} />;
 };
-export { DayProvider, useDay, CitiesProvider, useCities };
+
+const ChoosenLocationProvider = (props: { children: ReactNode }): ReactElement => {
+  const [choosenLocation, setChoosenLocation] = useState<{ [key: string]: any } | null>(null);
+
+  return <CitiesContext.Provider {...props} value={{ choosenLocation, setChoosenLocation }} />;
+};
+
+export { DayProvider, useDay, CitiesProvider, useCities, ChoosenLocationProvider, useChoosenLocation };

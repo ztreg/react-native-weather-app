@@ -1,9 +1,9 @@
+import { useCities, useDay, useChoosenLocation } from '@/@contexts/day-context';
 import { Image, StyleSheet } from 'react-native';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import React, { useEffect, useState } from 'react';
-import { useCities, useDay } from '@/@contexts/day-context';
 import Dropdown from '@/components/Dropdown';
 import * as Location from 'expo-location';
 
@@ -14,12 +14,14 @@ export default function HomeScreen() {
   const [defaultLocation, setDefaultLocation] = useState<any | null>(null)
   const { day, setDay } = useDay();
   const { cities } = useCities();
+  const { choosenLocation, setChoosenLocation } = useChoosenLocation();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   
   const [selectedOption, setSelectedOption] = useState("");
   const handleOptionSelected = (option: any) => {
     setSelectedOption(option);
     fetchWeather(option)
+    setChoosenLocation({loc: option})
   };
 
   const fetchWeather = async (searchValue?: string) => {
@@ -73,6 +75,7 @@ export default function HomeScreen() {
         const text = `${latitude},${longitude}` 
         
         setDefaultLocation(location);
+        setChoosenLocation({loc: location})
         fetchWeather(text)
         .catch(console.error);
       })();
@@ -92,7 +95,7 @@ export default function HomeScreen() {
         }
       }
     }
-  }, [currentDay, data, selectedOption, day])
+  }, [currentDay, data, selectedOption, day, setChoosenLocation])
 
   const getTime = (date: string) => {
     return date.split(' ')?.[1] || date
@@ -113,7 +116,7 @@ export default function HomeScreen() {
        <Dropdown
         options={cities}
         onOptionSelected={handleOptionSelected}
-        defaultLocation={defaultLocation}
+        defaultLocation={choosenLocation?.loc || defaultLocation}
         placeholder={"Search.."}
         />
        {day?.day &&  <ThemedView><ThemedText>{ day?.day} </ThemedText></ThemedView> }

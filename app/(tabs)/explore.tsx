@@ -3,7 +3,7 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import React, { useState, useEffect } from 'react';
-import { useCities, useDay } from '@/@contexts/day-context';
+import { useChoosenLocation, useCities, useDay } from '@/@contexts/day-context';
 import { router } from 'expo-router';
 import Dropdown from '@/components/Dropdown';
 import * as Location from 'expo-location';
@@ -15,11 +15,13 @@ export default function TabTwoScreen() {
   const { setDay } = useDay();
   const [selectedOption, setSelectedOption] = useState("");
   const { cities } = useCities();
+  const { choosenLocation, setChoosenLocation } = useChoosenLocation();
 
   // const options = typedOptions.sort((a, b) => a?.name?.localeCompare(b?.name))?.map((city: any) => city?.name)
   const handleOptionSelected = (option: any) => {
     setSelectedOption(option);
     fetchWeather(option);
+    setChoosenLocation({loc: option})
   };
 
   const fetchWeather = async (searchValue = "Stockholm") => {
@@ -49,7 +51,11 @@ export default function TabTwoScreen() {
   }
 
   useEffect(() => {
-    if (!defaultLocation) {
+    if (choosenLocation) {
+      setDefaultLocation(location);
+      fetchWeather(choosenLocation.loc).catch(console.error);
+    }
+    if (!choosenLocation && !defaultLocation) {
       (async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== "granted") {
@@ -63,10 +69,11 @@ export default function TabTwoScreen() {
         const text = `${latitude},${longitude}`;
   
         setDefaultLocation(location);
+        setChoosenLocation({loc: location})
         fetchWeather(text).catch(console.error);
       })();
     }
-  }, [defaultLocation]);
+  }, [choosenLocation, defaultLocation, setChoosenLocation]);
 
   function renderData() {
     if (data) {

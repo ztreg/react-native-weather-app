@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { DayProvider, CitiesProvider } from '@/@contexts/day-context';
+import { DayProvider, CitiesProvider, ChoosenLocationProvider } from '@/@contexts/day-context';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -28,15 +28,17 @@ export default function RootLayout() {
   }
 
   return (
+        <ChoosenLocationProvider>
     <DayProvider>
       <CitiesProvider>
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-        </ThemeProvider>
+          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+          </ThemeProvider>
       </CitiesProvider>
     </DayProvider>
+        </ChoosenLocationProvider>
   );
 }
