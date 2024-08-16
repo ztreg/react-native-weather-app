@@ -4,7 +4,6 @@ import React, { useEffect } from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import * as allCities from '../../data/geonames-all-cities-with-a-population-1000.json'
 import { useCities } from '@/@contexts/day-context';
 
 
@@ -13,10 +12,8 @@ export default function TabLayout() {
   const { setCities } = useCities();
 
   useEffect(() => {
-    const all = allCities.data
-    const options = all.toSorted((a, b) => a?.name?.localeCompare(b?.name))?.map((city: any) => city?.name)
-    console.log(options)
-    setCities(options)
+    const towns = ['Stockholm', 'Berlin', 'Oslo']
+    setCities(towns)
   }, [setCities])
   
 
@@ -29,7 +26,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tue',
+          title: 'Day',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'today' : 'today-outline'} color={color} />
           ),

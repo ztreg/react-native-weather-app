@@ -116,7 +116,8 @@ export default function HomeScreen() {
         onOptionSelected={handleOptionSelected}
         defaultLocation={defaultLocation}
         placeholder={"Search.."}
-      />
+        />
+       {day?.day &&  <ThemedView><ThemedText>{ day?.day} </ThemedText></ThemedView> }
       {renderData() || <ThemedView><ThemedText>Loading...</ThemedText></ThemedView>}
 
 

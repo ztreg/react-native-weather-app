@@ -29,7 +29,6 @@ export default function TabTwoScreen() {
       );
       const json = await res.json();
       const allDays = json?.forecast?.forecastday;
-
       setData(allDays);
       setDefaultLocation(json?.location?.name);
       return res;
@@ -38,28 +37,36 @@ export default function TabTwoScreen() {
     }
   };
 
+  function getDayName(dateStr: any) {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const d = new Date(dateStr);
+    return days[d.getDay()];     
+  }
+
   function changeDate(date: string) {
-    setDay({ day: date });
+    setDay({ day: date});
     router.navigate("/");
   }
 
   useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
-
-      let location = await Location.getCurrentPositionAsync({});
-      const latitude = location.coords.latitude;
-      const longitude = location.coords.longitude;
-      const text = `${latitude},${longitude}`;
-
-      setDefaultLocation(location);
-      fetchWeather(text).catch(console.error);
-    })();
-  }, []);
+    if (!defaultLocation) {
+      (async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          setErrorMsg("Permission to access location was denied");
+          return;
+        }
+  
+        let location = await Location.getCurrentPositionAsync({});
+        const latitude = location.coords.latitude;
+        const longitude = location.coords.longitude;
+        const text = `${latitude},${longitude}`;
+  
+        setDefaultLocation(location);
+        fetchWeather(text).catch(console.error);
+      })();
+    }
+  }, [data]);
 
   function renderData() {
     if (data) {
@@ -67,9 +74,9 @@ export default function TabTwoScreen() {
         <>
           {data.map((day: any) => (
             <ThemedView key={day.date}>
-              <Pressable onPress={() => changeDate(day.date)}>
+              <Pressable onPress={() => changeDate(day?.date)}>
                 <ThemedText style={styles.stepContainer}>
-                  {getTime(day?.date)}
+                  {getDayName(day?.date)}
                   <ThemedText style={styles.space}>
                     {" "}
                     {day?.day?.avgtemp_c} °
@@ -87,10 +94,6 @@ export default function TabTwoScreen() {
     }
     return null;
   }
-
-  const getTime = (date: string) => {
-    return date.split(" ")?.[1] || date;
-  };
 
   const weatherType = "sunny";
   const image = weatherType === "sunny" ? "sunny.jpg" : "rain.jpg";
@@ -116,7 +119,7 @@ export default function TabTwoScreen() {
             <h1>Loading...</h1>
           </ThemedText>
         </ThemedView>
-      )}
+      ) }
     </ParallaxScrollView>
   );
 }
