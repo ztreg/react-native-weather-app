@@ -28,17 +28,17 @@ export default function RootLayout() {
   }
 
   return (
-        <ChoosenLocationProvider>
     <DayProvider>
       <CitiesProvider>
+        <ChoosenLocationProvider>
           <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
             <Stack>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="+not-found" />
             </Stack>
           </ThemeProvider>
+        </ChoosenLocationProvider>
       </CitiesProvider>
     </DayProvider>
-        </ChoosenLocationProvider>
   );
 }

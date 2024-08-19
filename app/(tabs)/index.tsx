@@ -11,10 +11,10 @@ export default function HomeScreen() {
   const [data, setData] = useState<any>(null)
   const [currentDay, setCurrentDay] = useState<any>(null)
   const [restOfDay, setRestOfDay] = useState<any[] | null>(null)
+  const { choosenLocation, setChoosenLocation } = useChoosenLocation();
   const [defaultLocation, setDefaultLocation] = useState<any | null>(null)
   const { day, setDay } = useDay();
   const { cities } = useCities();
-  const { choosenLocation, setChoosenLocation } = useChoosenLocation();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   
   const [selectedOption, setSelectedOption] = useState("");
@@ -33,6 +33,8 @@ export default function HomeScreen() {
       const currentTime = json.current?.last_updated_epoch
       const timesOfInterest = allTimes.filter((time: any) => time.time_epoch > currentTime)
       setRestOfDay(timesOfInterest)
+      setDefaultLocation(json?.location?.name);
+      setChoosenLocation({loc: json?.location?.name})
       setData(json)
       return res
     } catch (error) {
@@ -73,9 +75,7 @@ export default function HomeScreen() {
         const latitude = location.coords.latitude;
         const longitude = location.coords.longitude;
         const text = `${latitude},${longitude}` 
-        
-        setDefaultLocation(location);
-        setChoosenLocation({loc: location})
+
         fetchWeather(text)
         .catch(console.error);
       })();
@@ -101,6 +101,14 @@ export default function HomeScreen() {
     return date.split(' ')?.[1] || date
   }
 
+  
+  function getDayName(dateStr: any) {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const d = new Date(dateStr);
+    return days[d.getDay()];     
+  }
+
+
   const weatherType = 'sunny'
   const image = weatherType === 'sunny' ? 'sunny.jpg' : 'rain.jpg'
   
@@ -119,7 +127,7 @@ export default function HomeScreen() {
         defaultLocation={choosenLocation?.loc || defaultLocation}
         placeholder={"Search.."}
         />
-       {day?.day &&  <ThemedView><ThemedText>{ day?.day} </ThemedText></ThemedView> }
+       {day?.day &&  <ThemedView><ThemedText>{ getDayName(day?.day)} </ThemedText></ThemedView> }
       {renderData() || <ThemedView><ThemedText>Loading...</ThemedText></ThemedView>}
 
 

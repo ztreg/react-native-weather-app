@@ -33,6 +33,7 @@ export default function TabTwoScreen() {
       const allDays = json?.forecast?.forecastday;
       setData(allDays);
       setDefaultLocation(json?.location?.name);
+      setChoosenLocation({loc: json?.location?.name})
       return res;
     } catch (error) {
       return error;
@@ -51,11 +52,16 @@ export default function TabTwoScreen() {
   }
 
   useEffect(() => {
-    if (choosenLocation) {
-      setDefaultLocation(location);
+    if (choosenLocation && !defaultLocation) {
+      console.log('====================================');
+      console.log(choosenLocation);
+      console.log('====================================');
+      setDefaultLocation(choosenLocation?.loc || location);
       fetchWeather(choosenLocation.loc).catch(console.error);
     }
-    if (!choosenLocation && !defaultLocation) {
+    else if (!choosenLocation && !defaultLocation) {
+      console.log('else if');
+      
       (async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== "granted") {
@@ -69,7 +75,7 @@ export default function TabTwoScreen() {
         const text = `${latitude},${longitude}`;
   
         setDefaultLocation(location);
-        setChoosenLocation({loc: location})
+        
         fetchWeather(text).catch(console.error);
       })();
     }
@@ -85,7 +91,6 @@ export default function TabTwoScreen() {
                 <ThemedText style={styles.stepContainer}>
                   {getDayName(day?.date)}
                   <ThemedText style={styles.space}>
-                    {" "}
                     {day?.day?.avgtemp_c} °
                   </ThemedText>
                   <Image
@@ -117,7 +122,7 @@ export default function TabTwoScreen() {
       <Dropdown
         options={cities}
         onOptionSelected={handleOptionSelected}
-        defaultLocation={defaultLocation}
+        defaultLocation={choosenLocation?.loc || defaultLocation}
         placeholder={"Search.."}
       />
       {renderData() || (
@@ -152,4 +157,4 @@ const styles = StyleSheet.create({
   space: {
     marginLeft: 54
   }
-});
+})

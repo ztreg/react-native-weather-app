@@ -49,7 +49,7 @@ function useCities(): CitiesContextType {
 function useChoosenLocation(): ChoosenLocationContextType {
   const context = useContext(ChoosenLocationContext);
   if (!context) {
-      throw new Error("useLocation must be used within an LocationsProvider");
+      throw new Error("useChoosenLocation must be used within an LocationsProvider");
   }
   return context;
 }
@@ -69,7 +69,7 @@ const CitiesProvider = (props: { children: ReactNode }): ReactElement => {
 const ChoosenLocationProvider = (props: { children: ReactNode }): ReactElement => {
   const [choosenLocation, setChoosenLocation] = useState<{ [key: string]: any } | null>(null);
 
-  return <CitiesContext.Provider {...props} value={{ choosenLocation, setChoosenLocation }} />;
+  return <ChoosenLocationContext.Provider {...props} value={{ choosenLocation, setChoosenLocation }} />;
 };
 
 export { DayProvider, useDay, CitiesProvider, useCities, ChoosenLocationProvider, useChoosenLocation };

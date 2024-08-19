@@ -20,7 +20,7 @@ export default function Dropdown ({ options, onOptionSelected, defaultLocation }
       <SelectDropdown
         disableAutoScroll
         data={options}
-        defaultValue={'Stockholm'} // use default value by index or default value
+        defaultValue={defaultLocation} // use default value by index or default value
         onSelect={(selectedItem, index) => onOptionPress(selectedItem)}
         renderButton={(selectedItem, isOpen) => {
           return (
