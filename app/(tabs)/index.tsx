@@ -94,8 +94,13 @@ export default function HomeScreen() {
           setRestOfDay(timesOfInterest)
         }
       }
+
     }
-  }, [currentDay, data, selectedOption, day, setChoosenLocation])
+    if (choosenLocation) {
+      console.log('choosen loc changed');
+      
+    }
+  }, [currentDay, data, selectedOption, day, setChoosenLocation, choosenLocation])
 
   const getTime = (date: string) => {
     return date.split(' ')?.[1] || date
@@ -107,7 +112,6 @@ export default function HomeScreen() {
     const d = new Date(dateStr);
     return days[d.getDay()];     
   }
-
 
   const weatherType = 'sunny'
   const image = weatherType === 'sunny' ? 'sunny.jpg' : 'rain.jpg'
