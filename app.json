@@ -21,7 +21,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.ztreg.weaterapp",
-      "versionCode": 29
+      "versionCode": 30
     },
     "web": {
       "bundler": "metro",

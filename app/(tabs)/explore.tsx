@@ -53,15 +53,10 @@ export default function TabTwoScreen() {
 
   useEffect(() => {
     if (choosenLocation && !defaultLocation) {
-      console.log('====================================');
-      console.log(choosenLocation);
-      console.log('====================================');
       setDefaultLocation(choosenLocation?.loc || location);
       fetchWeather(choosenLocation.loc).catch(console.error);
     }
     else if (!choosenLocation && !defaultLocation) {
-      console.log('else if');
-      
       (async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== "granted") {
