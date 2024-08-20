@@ -10,21 +10,20 @@ import * as Location from 'expo-location';
 
 export default function TabTwoScreen() {
   const [data, setData] = useState<any>(null);
-  const [defaultLocation, setDefaultLocation] = useState<any | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const { setDay } = useDay();
-  const [selectedOption, setSelectedOption] = useState("");
   const { cities } = useCities();
   const { choosenLocation, setChoosenLocation } = useChoosenLocation();
 
   // const options = typedOptions.sort((a, b) => a?.name?.localeCompare(b?.name))?.map((city: any) => city?.name)
   const handleOptionSelected = (option: any) => {
-    setSelectedOption(option);
     fetchWeather(option);
     setChoosenLocation({loc: option})
   };
 
   const fetchWeather = async (searchValue = "Stockholm") => {
+    console.log('fetching data from explore');
+    
     try {
       const res = await fetch(
         `http://api.weatherapi.com/v1/forecast.json?key=c08645764b994410956135425243007&q=${searchValue}&days=7&aqi=no&alerts=no`
@@ -32,8 +31,9 @@ export default function TabTwoScreen() {
       const json = await res.json();
       const allDays = json?.forecast?.forecastday;
       setData(allDays);
-      setDefaultLocation(json?.location?.name);
-      setChoosenLocation({loc: json?.location?.name})
+      if (choosenLocation?.loc !== json?.location?.name) {
+        setChoosenLocation({loc: json?.location?.name})
+      }
       return res;
     } catch (error) {
       return error;
@@ -52,11 +52,12 @@ export default function TabTwoScreen() {
   }
 
   useEffect(() => {
-    if (choosenLocation && !defaultLocation) {
-      setDefaultLocation(choosenLocation?.loc || location);
+    console.log('use effect trigger explore');
+    
+    if (choosenLocation?.loc) {
       fetchWeather(choosenLocation.loc).catch(console.error);
     }
-    else if (!choosenLocation && !defaultLocation) {
+    else if (!choosenLocation) {
       (async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== "granted") {
@@ -68,13 +69,11 @@ export default function TabTwoScreen() {
         const latitude = location.coords.latitude;
         const longitude = location.coords.longitude;
         const text = `${latitude},${longitude}`;
-  
-        setDefaultLocation(location);
         
         fetchWeather(text).catch(console.error);
       })();
     }
-  }, [choosenLocation, defaultLocation, setChoosenLocation]);
+  }, [choosenLocation]);
 
   function renderData() {
     if (data) {
@@ -114,12 +113,12 @@ export default function TabTwoScreen() {
         />
       }
     >
-      <Dropdown
+      {choosenLocation?.loc && <Dropdown
         options={cities}
         onOptionSelected={handleOptionSelected}
-        defaultLocation={choosenLocation?.loc || defaultLocation}
+        defaultLocation={choosenLocation?.loc}
         placeholder={"Search.."}
-      />
+      /> }
       {renderData() || (
         <ThemedView>
           <ThemedText>Loading...</ThemedText>
@@ -128,7 +127,6 @@ export default function TabTwoScreen() {
     </ParallaxScrollView>
   );
 }
-
 
 const styles = StyleSheet.create({
   stepContainer: {

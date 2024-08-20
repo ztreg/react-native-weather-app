@@ -12,7 +12,6 @@ export default function HomeScreen() {
   const [currentDay, setCurrentDay] = useState<any>(null)
   const [restOfDay, setRestOfDay] = useState<any[] | null>(null)
   const { choosenLocation, setChoosenLocation } = useChoosenLocation();
-  const [defaultLocation, setDefaultLocation] = useState<any | null>(null)
   const { day, setDay } = useDay();
   const { cities } = useCities();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -25,16 +24,18 @@ export default function HomeScreen() {
   };
 
   const fetchWeather = async (searchValue?: string) => {
+    console.log('fetching data from index');
     try {
       const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?q=${searchValue}&days=7&alerts=no&aqi=no&key=c08645764b994410956135425243007`)
       const json = await res.json()
 
-      const allTimes = json?.forecast?.forecastday?.[0].hour
+      const allTimes = json?.forecast?.forecastday?.[0]?.hour
       const currentTime = json.current?.last_updated_epoch
-      const timesOfInterest = allTimes.filter((time: any) => time.time_epoch > currentTime)
+      const timesOfInterest = allTimes?.filter((time: any) => time.time_epoch > currentTime)
       setRestOfDay(timesOfInterest)
-      setDefaultLocation(json?.location?.name);
-      setChoosenLocation({loc: json?.location?.name})
+      if (choosenLocation?.loc !== json?.location?.name) {
+        setChoosenLocation({loc: json?.location?.name})
+      }
       setData(json)
       return res
     } catch (error) {
@@ -96,10 +97,6 @@ export default function HomeScreen() {
       }
 
     }
-    if (choosenLocation) {
-      console.log('choosen loc changed');
-      
-    }
   }, [currentDay, data, selectedOption, day, setChoosenLocation, choosenLocation])
 
   const getTime = (date: string) => {
@@ -125,16 +122,16 @@ export default function HomeScreen() {
           style={styles.reactLogo}
         />
       }>
-       <Dropdown
-        options={cities}
-        onOptionSelected={handleOptionSelected}
-        defaultLocation={choosenLocation?.loc || defaultLocation}
-        placeholder={"Search.."}
+      {choosenLocation?.loc && 
+        <Dropdown
+          options={cities}
+          onOptionSelected={handleOptionSelected}
+          defaultLocation={choosenLocation?.loc}
+          placeholder={"Search.."}
         />
-       {day?.day &&  <ThemedView><ThemedText>{ getDayName(day?.day)} </ThemedText></ThemedView> }
+      }
+      {day?.day &&  <ThemedView><ThemedText>{ getDayName(day?.day)} </ThemedText></ThemedView> }
       {renderData() || <ThemedView><ThemedText>Loading...</ThemedText></ThemedView>}
-
-
     </ParallaxScrollView>
   );
 }

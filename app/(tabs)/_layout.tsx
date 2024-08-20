@@ -12,7 +12,7 @@ export default function TabLayout() {
   const { setCities } = useCities();
 
   useEffect(() => {
-    const towns = ['Stockholm', 'Berlin', 'Oslo']
+    const towns = ['Stockholm', 'Berlin', 'Oslo', 'Solna']
     setCities(towns)
   }, [setCities])
   
