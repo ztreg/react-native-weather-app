@@ -3,7 +3,7 @@ import { Image, StyleSheet } from 'react-native';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Dropdown from '@/components/Dropdown';
 import * as Location from 'expo-location';
 
@@ -23,25 +23,18 @@ export default function HomeScreen() {
     setChoosenLocation({loc: option})
   };
 
-  const fetchWeather = async (searchValue?: string) => {
-    console.log('fetching data from index');
-    try {
-      const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?q=${searchValue}&days=7&alerts=no&aqi=no&key=c08645764b994410956135425243007`)
-      const json = await res.json()
-
-      const allTimes = json?.forecast?.forecastday?.[0]?.hour
-      const currentTime = json.current?.last_updated_epoch
-      const timesOfInterest = allTimes?.filter((time: any) => time.time_epoch > currentTime)
-      setRestOfDay(timesOfInterest)
-      if (choosenLocation?.loc !== json?.location?.name) {
-        setChoosenLocation({loc: json?.location?.name})
-      }
-      setData(json)
-      return res
-    } catch (error) {
-      return error
+  const fetchWeather = useCallback(async (searchValue = "Stockholm") => {
+    const response = await fetch(`https://api.weatherapi.com/v1/forecast.json?q=${searchValue}&days=7&alerts=no&aqi=no&key=c08645764b994410956135425243007`);
+    const jsonData = await response.json();
+    const allTimes = jsonData?.forecast?.forecastday?.[0]?.hour
+    const currentTime = jsonData.current?.last_updated_epoch
+    const timesOfInterest = allTimes?.filter((time: any) => time.time_epoch > currentTime)
+    setRestOfDay(timesOfInterest)
+    setData(jsonData);
+    if (choosenLocation?.loc !== jsonData?.location?.name) {
+      setChoosenLocation({loc: jsonData?.location?.name})
     }
-  }
+  }, [choosenLocation, setChoosenLocation])
 
   function renderData() {
     if (cities && cities?.length > 0 && data && restOfDay && restOfDay?.length > 0 ) {
@@ -97,7 +90,7 @@ export default function HomeScreen() {
       }
 
     }
-  }, [currentDay, data, selectedOption, day, setChoosenLocation, choosenLocation])
+  }, [currentDay, data, selectedOption, day, setChoosenLocation, choosenLocation, fetchWeather])
 
   const getTime = (date: string) => {
     return date.split(' ')?.[1] || date

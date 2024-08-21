@@ -2,7 +2,7 @@ import { StyleSheet, Image, Pressable } from 'react-native';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useChoosenLocation, useCities, useDay } from '@/@contexts/day-context';
 import { router } from 'expo-router';
 import Dropdown from '@/components/Dropdown';
@@ -21,24 +21,15 @@ export default function TabTwoScreen() {
     setChoosenLocation({loc: option})
   };
 
-  const fetchWeather = async (searchValue = "Stockholm") => {
-    console.log('fetching data from explore');
-    
-    try {
-      const res = await fetch(
-        `http://api.weatherapi.com/v1/forecast.json?key=c08645764b994410956135425243007&q=${searchValue}&days=7&aqi=no&alerts=no`
-      );
-      const json = await res.json();
-      const allDays = json?.forecast?.forecastday;
-      setData(allDays);
-      if (choosenLocation?.loc !== json?.location?.name) {
-        setChoosenLocation({loc: json?.location?.name})
-      }
-      return res;
-    } catch (error) {
-      return error;
+  const fetchWeather = useCallback(async (searchValue = "Stockholm") => {
+    const response = await fetch(`http://api.weatherapi.com/v1/forecast.json?key=c08645764b994410956135425243007&q=${searchValue}&days=7&aqi=no&alerts=no`);
+    const jsonData = await response.json();
+    const allDays = jsonData?.forecast?.forecastday;
+    setData(allDays);
+    if (choosenLocation?.loc !== jsonData?.location?.name) {
+      setChoosenLocation({loc: jsonData?.location?.name})
     }
-  };
+  }, [choosenLocation, setChoosenLocation])
 
   function getDayName(dateStr: any) {
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -52,8 +43,6 @@ export default function TabTwoScreen() {
   }
 
   useEffect(() => {
-    console.log('use effect trigger explore');
-    
     if (choosenLocation?.loc) {
       fetchWeather(choosenLocation.loc).catch(console.error);
     }
@@ -73,7 +62,7 @@ export default function TabTwoScreen() {
         fetchWeather(text).catch(console.error);
       })();
     }
-  }, [choosenLocation]);
+  }, [choosenLocation, fetchWeather]);
 
   function renderData() {
     if (data) {
