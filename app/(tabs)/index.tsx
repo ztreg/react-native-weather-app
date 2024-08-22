@@ -11,10 +11,10 @@ export default function HomeScreen() {
   const [data, setData] = useState<any>(null)
   const [currentDay, setCurrentDay] = useState<any>(null)
   const [restOfDay, setRestOfDay] = useState<any[] | null>(null)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const { choosenLocation, setChoosenLocation } = useChoosenLocation();
   const { day, setDay } = useDay();
   const { cities } = useCities();
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   
   const [selectedOption, setSelectedOption] = useState("");
   const handleOptionSelected = (option: any) => {
@@ -23,21 +23,9 @@ export default function HomeScreen() {
     setChoosenLocation({loc: option})
   };
 
-  const fetchWeather = useCallback(async (searchValue = "Stockholm") => {
-    const response = await fetch(`https://api.weatherapi.com/v1/forecast.json?q=${searchValue}&days=7&alerts=no&aqi=no&key=c08645764b994410956135425243007`);
-    const jsonData = await response.json();
-    const allTimes = jsonData?.forecast?.forecastday?.[0]?.hour
-    const currentTime = jsonData.current?.last_updated_epoch
-    const timesOfInterest = allTimes?.filter((time: any) => time.time_epoch > currentTime)
-    setRestOfDay(timesOfInterest)
-    setData(jsonData);
-    if (choosenLocation?.loc !== jsonData?.location?.name) {
-      setChoosenLocation({loc: jsonData?.location?.name})
-    }
-  }, [choosenLocation, setChoosenLocation])
 
   function renderData() {
-    if (cities && cities?.length > 0 && data && restOfDay && restOfDay?.length > 0 ) {
+    if (cities && cities?.length > 0 && data && restOfDay && restOfDay?.length > 0 && !errorMsg ) {
       return <>
       {restOfDay.map((day) => (
         <ThemedView key={day.time}>
@@ -57,45 +45,12 @@ export default function HomeScreen() {
   }
 
   useEffect(() => {
-    if (!data) {
-      (async () => {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          setErrorMsg('Permission to access location was denied');
-          return;
-        }
-  
-        let location = await Location.getCurrentPositionAsync({});
-        const latitude = location.coords.latitude;
-        const longitude = location.coords.longitude;
-        const text = `${latitude},${longitude}` 
 
-        fetchWeather(text)
-        .catch(console.error);
-      })();
-    }
-    if (day?.day) {
-      setCurrentDay(day.day)
-      if (day.day !== currentDay) {
-        if (!data) {
-          fetchWeather(selectedOption)
-        } else {
-          setRestOfDay([])
-          const selectedDay = data?.forecast?.forecastday?.find((dayDate: any) => dayDate.date === day?.day)
-          const allTimes = selectedDay.hour
-          const currentTime = data.current?.last_updated.split(' ')?.[1]
-          const timesOfInterest = allTimes.filter((time: any) => time.time.split(' ')?.[1] > currentTime)
-          setRestOfDay(timesOfInterest)
-        }
-      }
-
-    }
-  }, [currentDay, data, selectedOption, day, setChoosenLocation, choosenLocation, fetchWeather])
+  }, [])
 
   const getTime = (date: string) => {
     return date.split(' ')?.[1] || date
   }
-
   
   function getDayName(dateStr: any) {
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -124,6 +79,8 @@ export default function HomeScreen() {
         />
       }
       {day?.day &&  <ThemedView><ThemedText>{ getDayName(day?.day)} </ThemedText></ThemedView> }
+      {errorMsg &&  <ThemedView><ThemedText>{ errorMsg } </ThemedText></ThemedView> }
+
       {renderData() || <ThemedView><ThemedText>Loading...</ThemedText></ThemedView>}
     </ParallaxScrollView>
   );

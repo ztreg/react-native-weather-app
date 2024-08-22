@@ -30,6 +30,13 @@ type ChoosenLocationContextType = {
 
 const ChoosenLocationContext = createContext<ChoosenLocationContextType | undefined>(undefined);
 
+type WeatherContextType = {
+  weather: { [key: string]: any } | null;
+  setWeather: Dispatch<SetStateAction<{ [key: string]: any } | null>>;
+};
+
+const WeatherContext = createContext<WeatherContextType | undefined>(undefined);
+
 function useDay(): DayContextType {
   const context = useContext(DayContext);
   if (!context) {
@@ -54,10 +61,24 @@ function useChoosenLocation(): ChoosenLocationContextType {
   return context;
 }
 
+function useWeather(): WeatherContextType {
+  const context = useContext(WeatherContext);
+  if (!context) {
+      throw new Error("useWeather must be used within an WeatherProvider");
+  }
+  return context;
+}
+
 const DayProvider = (props: { children: ReactNode }): ReactElement => {
   const [day, setDay] = useState<{ [key: string]: any } | null>(null);
 
   return <DayContext.Provider {...props} value={{ day, setDay }} />;
+};
+
+const WeatherProvider = (props: { children: ReactNode }): ReactElement => {
+  const [weather, setWeather] = useState<{ [key: string]: any } | null>(null);
+
+  return <WeatherContext.Provider {...props} value={{ weather, setWeather }} />;
 };
 
 const CitiesProvider = (props: { children: ReactNode }): ReactElement => {
@@ -72,4 +93,9 @@ const ChoosenLocationProvider = (props: { children: ReactNode }): ReactElement =
   return <ChoosenLocationContext.Provider {...props} value={{ choosenLocation, setChoosenLocation }} />;
 };
 
-export { DayProvider, useDay, CitiesProvider, useCities, ChoosenLocationProvider, useChoosenLocation };
+export {
+  DayProvider, useDay,
+  CitiesProvider, useCities,
+  ChoosenLocationProvider, useChoosenLocation,
+  WeatherProvider, useWeather
+};

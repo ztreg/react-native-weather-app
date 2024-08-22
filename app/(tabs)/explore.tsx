@@ -65,7 +65,7 @@ export default function TabTwoScreen() {
   }, [choosenLocation, fetchWeather]);
 
   function renderData() {
-    if (data) {
+    if (data?.length > 0 && !errorMsg) {
       return (
         <>
           {data.map((day: any) => (
@@ -108,6 +108,7 @@ export default function TabTwoScreen() {
         defaultLocation={choosenLocation?.loc}
         placeholder={"Search.."}
       /> }
+      {errorMsg && <ThemedView><ThemedText>{ errorMsg } </ThemedText></ThemedView> }
       {renderData() || (
         <ThemedView>
           <ThemedText>Loading...</ThemedText>

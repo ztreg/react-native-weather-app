@@ -11,6 +11,7 @@ Set Up Your Developer Account:
 
 Set up your public developer profile, payment details (if you plan to monetize your app), and other account settings.
 Make sure your contact email is correct, as Google will use this for important notifications.
+
 Step 2: Set Up Google Service Account (Optional, But Recommended)
 Create a Google Cloud Project:
 
@@ -29,6 +30,7 @@ Link the Service Account to Google Play Console:
 
 In Google Play Console, go to Setup > API Access.
 Link your Google Cloud project and grant permissions to the service account.
+
 Step 3: Develop Your React Native App Using Expo
 Install Expo CLI:
 
@@ -146,3 +148,13 @@ Version Management for Updates:
 
 Release Notes:
 Add clear and concise release notes for each version, informing users of what’s new or fixed.
+
+
+Do you want your app to be popular?
+Understanding these elements allows you to boost the visibility of your app so it remains visible. 
+The critical aspects considered by app stores when they arrange apps include:
+    Keywords used within the app title
+    Content in the description alongside screenshots
+    User ratings coupled with reviews
+    Metrics relating to downloads and user engagement
+    Frequency of updates along with bug fixes
