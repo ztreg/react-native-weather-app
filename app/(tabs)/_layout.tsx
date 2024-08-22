@@ -4,8 +4,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { useChoosenLocation, useCities, useDay } from '@/@contexts/day-context';
+import { useChoosenLocation, useCities, useDay, useWeather } from '@/@contexts/day-context';
 import * as Location from 'expo-location';
+import { ThemedText } from '@/components/ThemedText';
 
 
 export default function TabLayout() {
@@ -17,24 +18,21 @@ export default function TabLayout() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const { choosenLocation, setChoosenLocation } = useChoosenLocation();
   const { day, setDay } = useDay();
+  const { weather, setWeather } = useWeather()
 
   const fetchWeather = useCallback(async (searchValue = "Stockholm") => {
     const response = await fetch(`http://api.weatherapi.com/v1/forecast.json?key=c08645764b994410956135425243007&q=${searchValue}&days=7&aqi=no&alerts=no`);
     const jsonData = await response.json();
-    const allTimes = jsonData?.forecast?.forecastday?.[0]?.hour
-    const currentTime = jsonData.current?.last_updated_epoch
-    const timesOfInterest = allTimes?.filter((time: any) => time.time_epoch > currentTime)
-    setRestOfDay(timesOfInterest)
-    setData(jsonData);
+    setWeather({data: jsonData})
     if (choosenLocation?.loc !== jsonData?.location?.name) {
       setChoosenLocation({loc: jsonData?.location?.name})
     }
-  }, [choosenLocation, setChoosenLocation])
+  }, [choosenLocation, setChoosenLocation, setWeather])
 
   useEffect(() => {
-    const towns = ['Stockholm', 'Berlin', 'Oslo', 'Solna']
+    const towns = ['Stockholm', 'Berlin', 'Oslo', 'Solna', 'Paris', 'Rome']
     setCities(towns)
-    if (!data) {
+    if (!weather?.data) {
       (async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
@@ -68,31 +66,40 @@ export default function TabLayout() {
 
     }
   }, [setCities])
+
+  function renderApplication() {
+    if (weather?.data?.length > 0) {
+      return <>
+        <Tabs
+        screenOptions={{
+          tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+          headerShown: false,
+        }}>
+          <Tabs.Screen
+            name="index"
+            options={{
+              title: 'Day',
+              tabBarIcon: ({ color, focused }) => (
+                <TabBarIcon name={focused ? 'today' : 'today-outline'} color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="explore"
+            options={{
+              title: 'Week',
+              tabBarIcon: ({ color, focused }) => (
+                <TabBarIcon name={focused ? 'list' : 'list-outline'} color={color} />
+              ),
+            }}
+          />
+        </Tabs>
+      </>
+    }
+    return ''
+  }
   
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Day',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'today' : 'today-outline'} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Week',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'list' : 'list-outline'} color={color} />
-          ),
-        }}
-      />
-    </Tabs>
+    renderApplication() || <ThemedText>Loading...</ThemedText>
   );
 }
